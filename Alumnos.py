@@ -22,6 +22,13 @@ archivo=""
 nombre_archivo="padron"
 init(autoreset=True)  # Inicializar colorama para que se reinicie automáticamente después de cada impresión
 
+
+# Funcion para limpiar la pantalla
+def clean():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+
 #(f"{VARIABLE:.2f}") => FORMATEA LA VARIABLE NUMÉRICA A DECIMAL DE DOS DIGITOS DECIMALES.
 #FUNCION CARGA INICIAL DEL PADRON DE PERSONAS DESDE EL ARCHIVO padron.csv
 def archivo_carga_inicial_personas(padron):
@@ -78,7 +85,7 @@ def archivo_carga_inicial_personas(padron):
 # Función para cargar una persona
 def cargar_persona(padron):
     persona = {}
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clean()
     init()  # Inicializar colorama
 
     apellido = input(f"{Back.BLACK}{Fore.WHITE}Ingrese el apellido: ")
@@ -155,7 +162,7 @@ def cargar_persona(padron):
 
 def guardar_padron_en_archivo(padron):
     global archivo
-    os.system('cls' if os.name == 'nt' else 'clear')    
+    clean()    
     while True:
         confirmacion = input("¿Desea guardar los cambios en el archivo " + archivo + "? (S/N): ")
         if confirmacion.lower() == "s":
@@ -208,7 +215,7 @@ def guardar_padron_en_archivo(padron):
 def modificar_persona(padron):
     print("Función modificar_persona()")
     dni = int(input("Ingrese el DNI de la persona a modificar: "))
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clean()
     encontrado = False
     #materia1_nota1 = None
     #materia1_nota2 = None
@@ -313,7 +320,7 @@ def modificar_persona(padron):
 import os
 
 def borrar_persona(padron):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clean()
     print("Función borrar_persona()")
     dni = int(input("Ingrese el DNI de la persona a borrar: "))
     mostrar_persona(padron, dni)
@@ -433,7 +440,7 @@ def mostrar_persona(padron, dni):
 def archivo_carga_personas(padron, nombre_archivo):
     global archivo
     archivo=None
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clean()
     archivo = input("Ingrese SOLO EL NOMBRE del archivo CSV: " + ".csv" + " (solo 'ENTER' carga el archivo 'padron'). ")
     
     try:
@@ -507,7 +514,7 @@ def archivo_carga_personas(padron, nombre_archivo):
 
 def mostrar_padron(padron):
     #print("\033[5m")  # Código para fuente de tamaño menor
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clean()
     print("Lista completa de personas:")
     for i, persona in enumerate(padron, start=1):
         print(f"Registro {i}: ", end="")
@@ -545,7 +552,7 @@ def subrayar(*textos):
 titulo = subrayar(f"{Fore.GREEN}{Style.BRIGHT}Ingrese la operación que desea realizar:")
 
 opcion1 = "1. " + f"{Fore.WHITE}{Style.BRIGHT}Dar de Alta a una persona"
-opcion2 = f"{Fore.RESET}{Style.RESET_ALL}2. " + f"{Fore.WHITE}{Style.BRIGHT}Modificar datos de la persona"
+opcion2 = f"{Fore.RESET}{Style.RESET_ALL}2. " + f"{Fore.RED}{Style.BRIGHT}Modificar datos de la persona"
 opcion3 = f"{Fore.RESET}{Style.RESET_ALL}3. " + f"{Fore.WHITE}{Style.BRIGHT}Eliminar a una persona"
 opcion4 = f"{Fore.RESET}{Style.RESET_ALL}4. " + f"{Fore.WHITE}{Style.BRIGHT}Mostrar datos de una persona"
 opcion5 = f"{Fore.RESET}{Style.RESET_ALL}5. " + f"{Fore.CYAN}Recargar/Importar listado de personas desde un archivo CSV"
@@ -557,9 +564,10 @@ opcion8 = f"¿Su opción? " + f"{Fore.RESET}{Style.RESET_ALL}-->>> "
 texto_estilizado = f"{titulo}\n\n{opcion1}\n{opcion2}\n{opcion3}\n{opcion4}\n{opcion5}\n{opcion6}\n{opcion7}\n{opcion8}"
 
 # Solicitar la opción al usuario
-opcion_str = input(texto_estilizado)
+#opcion_str = input(texto_estilizado)
 
 while True:
+    clean()
     try:
             # Solicitar la opción al usuario
             opcion_str = input(texto_estilizado)
@@ -610,9 +618,9 @@ archivo="padron.csv"
 guardar_padron_en_archivo(padron)
 #break
 
-    #Para limpiar la pantalla
-import os
-os.system('cls' if os.name == 'nt' else 'clear')
+
+#Para limpiar la pantalla
+clean()
 
 #FIN DE PROGRAMA
 

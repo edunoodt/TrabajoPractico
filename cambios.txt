@@ -1,0 +1,25 @@
+Linea 27
+crear una funcion para limpiar pantalla:
+def clean():
+     os.system('cls' if os.name == 'nt' else 'clear')
+
+Reemplazar el resto de las apariciones de:
+     os.system('cls' if os.name == 'nt' else 'clear')
+     Por
+     clean()
+
+Sacar el ingreso de texto que está antes del while True.
+    opcion_str = input(texto_estilizado)
+    Inmediatamente al entrar vuelve a pedirlo.
+    Incluso me parece que se soluciona el error al salir (de la opción 0)
+
+No entiendo la fi¿uncionalidad de:
+            if opcion_str == "":
+                opcion = -1
+            else:
+                opcion = int(opcion_str)
+    No veo que uses el -1 en otra parte y creo que no hace falta convertirlo en entero 
+    dado que los if siguientes podrian ser del tipo:
+    if opcion == '1'
+
+Agregar un clean() despues del while.
