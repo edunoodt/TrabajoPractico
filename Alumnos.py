@@ -11,23 +11,20 @@
 #
 #INICIO DE PROGRAMA
 padron = []
+from cgi import print_form
 import csv
 import os
 import time
 import colorama
 from colorama import Fore, Back, Style
 from colorama import init
-
+from sty import fg, bg, ef, rs
+import textwrap
+import pprint
+import re
 archivo=""
 nombre_archivo="padron"
 init(autoreset=True)  # Inicializar colorama para que se reinicie automáticamente después de cada impresión
-
-
-# Funcion para limpiar la pantalla
-def clean():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
 
 #(f"{VARIABLE:.2f}") => FORMATEA LA VARIABLE NUMÉRICA A DECIMAL DE DOS DIGITOS DECIMALES.
 #FUNCION CARGA INICIAL DEL PADRON DE PERSONAS DESDE EL ARCHIVO padron.csv
@@ -85,7 +82,7 @@ def archivo_carga_inicial_personas(padron):
 # Función para cargar una persona
 def cargar_persona(padron):
     persona = {}
-    clean()
+    os.system('cls' if os.name == 'nt' else 'clear')
     init()  # Inicializar colorama
 
     apellido = input(f"{Back.BLACK}{Fore.WHITE}Ingrese el apellido: ")
@@ -136,7 +133,7 @@ def cargar_persona(padron):
                 print(f"{Fore.RED}Error: {str(e)}")
 
         promedio = (nota1 + nota2) / 2
-        situacion = "Aprobado" if promedio >= 6.00 else "Desaprobado"
+        situacion = "Regularizada" if promedio >= 6.00 else "No Regularizada"
         persona[f"{campo}_nota1"] = format(nota1, ".2f")
         persona[f"{campo}_nota2"] = format(nota2, ".2f")
         persona[f"{campo}_promedio"] = format(promedio, ".2f")
@@ -152,7 +149,7 @@ def cargar_persona(padron):
         nota1 = format(nota1, ".2f")  # Formateo de nota1
         nota2 = format(nota2, ".2f")  # Formateo de nota2
         promedio = float(f"{((float(nota1) + float(nota2)) / 2):.2f}")
-        situacion = "Aprobado" if promedio >= 6.00 else "Desaprobado"
+        situacion = "Regularizada" if promedio >= 6.00 else "No Regularizada"
         print(f"{Fore.GREEN}Materia {i}: {materia} Nota 1: {nota1} Nota 2: {nota2} Promedio: {format(promedio, '.2f')} Situación: {situacion}")
 
     return persona
@@ -162,7 +159,7 @@ def cargar_persona(padron):
 
 def guardar_padron_en_archivo(padron):
     global archivo
-    clean()    
+    os.system('cls' if os.name == 'nt' else 'clear')    
     while True:
         confirmacion = input("¿Desea guardar los cambios en el archivo " + archivo + "? (S/N): ")
         if confirmacion.lower() == "s":
@@ -208,119 +205,243 @@ def guardar_padron_en_archivo(padron):
         time.sleep(1)
    
 
-
-
-
 # Función para modificar una persona
 def modificar_persona(padron):
-    print("Función modificar_persona()")
-    dni = int(input("Ingrese el DNI de la persona a modificar: "))
-    clean()
+    #print("Función modificar_persona()")
+    #os.system('cls' if os.name == 'nt' else 'clear')
+    global encontrado
     encontrado = False
-    #materia1_nota1 = None
-    #materia1_nota2 = None
+    dni = int(input("Ingrese el DNI de la persona cuyos datos desea modificar: "))
+    global persona
+    persona = mostrar_persona_a_modificar(padron, dni)
 
+    if persona is not None:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("")
+        print(f"Va a modificar los datos de " + persona["apellido"] + ", " + persona["nombres"])
+        mostrar_persona_a_modificar(padron, dni)
+        time.sleep(4)
 
-    for persona in padron:
-        if persona["dni"] == dni:
-            # Modificar los datos de la persona
-            opciones = """Ingrese la opción del dato que desea modificar:
-            A. Apellido
-            N. Nombres
-            M1. materia_1
-            N11. Primera Nota de la materia 1
-            N12. Segunda Nota de la materia 1
-#Promedio
-            S1. Indique Situación Materia 1
-            D. Domicilio, Número, Piso, Departamento, materia2_promedio, Provincia, Código Postal o Año de ingreso
-            M. materia3
-            V. Volver al menú
-            """
-            opcion = input(opciones).upper()
-
-            if opcion == 'A':
-                persona["apellido"] = input("Ingrese el nuevo apellido: ").upper()
-
-            elif opcion == 'N':
-                persona["nombres"] = input("Ingrese los nuevos nombres: ").upper()
-
-            elif opcion == 'M1':
-                persona["materia1"] = input("Ingrese el nombre de la materia 1: ").upper()
-            
-            elif opcion == 'N11':
-                persona["materia1_nota1"] = float(input("Ingrese la primera nota de la materia 1: "))
-             
-            elif opcion == 'N12':
-                persona["materia1_nota2"] = float(input("Ingrese la segunda nota de la materia 1: "))
-            
-            elif opcion == 'S1':
-                persona["materia1_situacion"] = str(input("Ingrese Situación materia 1: "))
-
-            elif opcion == 'D':
-                persona["domicilio"] = str(input("Ingrese la nueva domicilio: "))
-                
-                #USAR ESTAS INSTRUCCIONES PARA CARGAR EL RESTO DE LAS MATERIAS####
-                
-                #persona["materia1_situacion"] = str(input("Ingrese el nuevo número: "))
-                #persona["materia2"] = int(input("Ingrese el nuevo materia2: "))
-                #persona["materia2_nota1"] = input("Ingrese el nuevo departamento: ")
-                #persona["materia2_nota2"] = input("Ingrese Provincia: ")
-                #persona["materia2_promedio"] = input("Ingrese la materia2_promedio: ")
-                #persona["materia2_situacion"] = input("Ingrese el código postal: ")
-                #persona["materia3_nota1"] = int(input("Ingrese el año de ingreso: "))
-                
-
-            elif opcion == 'M':
-                persona["materia3"] = input("Ingrese la materia 3: ")
-
-            elif opcion == 'V':
-                print("Saliendo del Menú...")
-                break
-
-            print("Datos modificados correctamente.")
-
-            print("Datos de la persona:")
-            print("Apellido:", persona["apellido"])
-            print("Nombres:", persona["nombres"])
-            print("DNI:", persona["dni"])
-            print("Domicilio:", persona["domicilio"])
-            print("Materia 1:", persona["materia1"])
-            print("Materia 1_Nota 1:", persona["materia1_nota1"])
-            print("Materia 1_Nota 2:", persona["materia1_nota2"])
-            print("Materia 1_Promedio:", persona["materia1_promedio"])
-            print("Materia 1_Situacion:", persona["materia1_situacion"])
-            print("Materia 2:", persona["materia2"])
-            print("Materia 2_Nota 1:", persona["materia2_nota1"])
-            print("Materia 2_Nota 2:", persona["materia2_nota2"])
-            print("Materia 2_Promedio:", persona["materia2_promedio"])
-            print("Materia 2_Situacion:", persona["materia2_situacion"])
-            print("Materia 3:", persona["materia3"])
-            print("Materia 3_nota 1:", persona["materia3_nota1"])
-            print("Materia 3_Nota 2:", persona["materia3_nota2"])
-            print("Materia 3_Promedio:", persona["materia3_promedio"])
-            print("Materia 3_Situacion:", persona["materia3_situacion"])
-            print("Materia 4:", persona["materia4"])
-            print("Materia 4_nota 1:", persona["materia4_nota1"])
-            print("Materia 4_Nota 2:", persona["materia4_nota2"])
-            print("Materia 4_Promedio:", persona["materia4_promedio"])
-            print("Materia 4_Situacion:", persona["materia4_situacion"])
-
-
-            encontrado = True
-            break
-    
-    if encontrado==True:
-        guardar_padron_en_archivo(padron)
-       
     else:
         print("No se encontró una persona con ese DNI.")
+        time.sleep(4)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return
+
+
+    # Definir las opciones del menú con diferentes estilos
+
+
+#    opcion1 = f"{fg.da_blue}[APE]. " + f"{fg.li_blue}{ef.italic}Modificar Apellido"
+#    opcion2 = f"{fg.da_blue}[NOM]. " + f"{fg.li_blue}{ef.italic}Modificar Nombre"
+#    opcion3 = f"{fg.da_blue}[DOM]. " + f"{fg.li_blue}{ef.italic}Modificar Domicilio"
+#    opcion4 = f"{fg.da_blue}[DNI]. " + f"{fg.li_blue}{ef.italic}Modificar DNI"
+
+#    opcion5 = f"{fg.da_green}[MA1]. " + f"{fg.li_green}{ef.italic}Modificar Nombre Materia 1"
+#    opcion6 = f"{fg.da_green}[N11]. " + f"{fg.li_green}{ef.italic}Modificar Primera Nota Materia 1"
+#    opcion7 = f"{fg.da_green}[N21]. " + f"{fg.li_green}{ef.italic}Modificar Segunda Materia 2"
+#
+#    opcion8 = f"{fg.da_yellow}[MA2]. " + f"{fg.li_yellow}{ef.italic}Modificar Nombre Materia 2"
+#    opcion9 = f"{fg.da_yellow}[N12]. " + f"{fg.li_yellow}{ef.italic}Modificar Primera Nota Materia 2"
+#    opcion10 = f"{fg.da_yellow}[N22]. " + f"{fg.li_yellow}{ef.italic}Modificar Segunda Materia 2"
+#
+#    opcion11 = f"{fg.da_cyan}[MA3]. " + f"{fg.li_cyan}{ef.italic}Modificar Nombre Materia 3"
+#    opcion12 = f"{fg.da_cyan}[N13]. " + f"{fg.li_cyan}{ef.italic}Modificar Primera Nota Materia 3"
+#    opcion13 = f"{fg.da_cyan}[N23]. " + f"{fg.li_cyan}{ef.italic}Modificar Segunda Materia 3"
+#
+#    opcion14 = f"{fg.da_magenta}[MA4]. " + f"{fg.li_magenta}{ef.italic}Modificar Nombre Materia 4"
+#    opcion15 = f"{fg.da_magenta}[N14]. " + f"{fg.li_magenta}{ef.italic}Modificar Primera Nota Materia 4"
+#    opcion16 = f"{fg.da_magenta}[N24]. " + f"{fg.li_magenta}{ef.italic}Modificar Segunda Materia 4"
+# Opciones del menú 
+# Opciones del menú
+    materia1=persona['materia1']
+    materia2=persona['materia2']
+    materia3=persona['materia3']
+    materia4=persona['materia4']
+    opciones_modif = [
+        f"{fg.da_blue}[APE]. " + f"{fg.li_blue}{ef.italic}Modificar Apellido de {persona['apellido']}, {persona['nombres']}",
+        f"{fg.da_blue}[NOM]. " + f"{fg.li_blue}{ef.italic}Modificar Nombre {persona['apellido']}, {persona['nombres']}",
+        f"{fg.da_green}[MA1]. " + f"{fg.li_green}{ef.italic}Modificar el Nombre de la Materia 1: {materia1}",
+        f"{fg.da_green}[N11]. " + f"{fg.li_green}{ef.italic}Modificar la Primera Nota de {materia1}",
+        f"{fg.da_green}[N21]. " + f"{fg.li_green}{ef.italic}Modificar la Segunda Nota de {materia1}",
+        f"{fg.da_yellow}[MA2]. " + f"{fg.li_yellow}{ef.italic}Modificar el Nombre de la Materia 2: {materia2}",
+        f"{fg.da_yellow}[N12]. " + f"{fg.li_yellow}{ef.italic}Modificar la Primera Nota de {materia2}",
+        f"{fg.da_yellow}[N22]. " + f"{fg.li_yellow}{ef.italic}Modificar la Segunda Nota de {materia2}",
+        f"{fg.li_red}[ V ]  . " + f"{bg.da_black}{fg.da_red}Volver al Menú Principal ",
+        f"{fg.da_blue}[DOM]. " + f"{fg.li_blue}{ef.italic}Modificar Domicilio de {persona['apellido']}, {persona['nombres']}",
+        f"{fg.da_blue}[DNI]. " + f"{fg.li_blue}{ef.italic}Modificar DNI de {persona['apellido']}, {persona['nombres']}",
+        f"{fg.da_cyan}[MA3]. " + f"{fg.li_cyan}{ef.italic}Modificar el Nombre de la Materia 3:  {materia3}",
+        f"{fg.da_cyan}[N13]. " + f"{fg.li_cyan}{ef.italic}Modificar la Primera Nota de {materia3}",
+        f"{fg.da_cyan}[N23]. " + f"{fg.li_cyan}{ef.italic}Modificar la Segunda Nota de {materia3}",
+        f"{fg.da_magenta}[MA4]. " + f"{fg.li_magenta}{ef.italic}Modificar el Nombre de la Materia 4: {materia4}",
+        f"{fg.da_magenta}[N14]. " + f"{fg.li_magenta}{ef.italic}Modificar la Primera Nota de {materia4}",
+        f"{fg.da_magenta}[N24]. " + f"{fg.li_magenta}{ef.italic}Modificar la Segunda Nota de {materia4}",
+        f" " + f"{Fore.RESET}{Style.RESET_ALL}"
+    ]
+
+    # Calcular la longitud máxima de las opciones en cada columna
+    max_length = max(len(option) for option in opciones_modif)
+    half_length = max_length // 2  # Longitud deseada para cada columna
+
+    # Dividir las opciones en dos columnas
+    columnas = list(zip(opciones_modif[:len(opciones_modif)//2], opciones_modif[len(opciones_modif)//2:]))
+
+    # Imprimir las opciones en dos columnas
+        # Función para subrayar el texto
+    def subrayar(*textos):
+        return " ".join("\033[4m" + texto + "\033[0m" for texto in textos)
+    
+    titulo = subrayar(f"{Fore.GREEN}{Style.BRIGHT}Ingrese la operación que desea realizar:")
+    print(titulo)
+    print()
+
+    for column in columnas:
+        for option in column:
+            print(option.ljust(max_length), end='   ')
+        print()
+
+    #texto_estilizado = opciones
+    #print(texto_estilizado)
+
+
+        #opcion17 = f"{fg.li_red}[V]  . " + f"{bg.da_black}{fg.da_red}Volver al Menú Principal "
+        #opcion18 = f"¿Su opción? " + f"{Fore.RESET}{Style.RESET_ALL}-->>> "
+    texto_estilizado=opciones_modif
+# Concatenar las líneas del menú
+    #texto_estilizado = f"{titulo}\n\n{opcion1}\n{opcion2}\n{opcion3}\n{opcion4}\n{opcion5}\n{opcion6}\n{opcion7}\n{opcion8}\n{opcion9}\n{opcion10}\n{opcion11}\n{opcion12}\n{opcion13}\n{opcion14}\n{opcion15}\n{opcion16}\n{opcion17}\n{opcion18}"
+    #print(str(persona["materia1"]))
+
+#    print(f"{Back.BLACK}{Fore.GREEN}Promedio de {persona['materia1']}: {float(persona['materia1_nota1']):.2f}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.GREEN}Promedio de {persona['materia1']}: {float(persona['materia1_nota2']):.2f}".ljust(10))
+#    
+#    print(f"{Back.BLACK}{Fore.YELLOW}Cambiar nombre de la materia {persona['materia2']}: {str(persona['materia2'])}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.YELLOW}Promedio de {persona['materia2']}: {float(persona['materia2_nota1']):.2f}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.YELLOW}Promedio de {persona['materia2']}: {float(persona['materia2_nota2']):.2f}".ljust(10))
+#    
+#    print(f"{Back.BLACK}{Fore.CYAN}Cambiar nombre de la materia {persona['materia3']}: {str(persona['materia3'])}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.CYAN}Promedio de {persona['materia3']}: {float(persona['materia3_nota1']):.2f}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.CYAN}Promedio de {persona['materia3']}: {float(persona['materia3_nota2']):.2f}".ljust(10))
+#
+#    print(f"{Back.BLACK}{Fore.MAGENTA}Cambiar nombre de la materia {persona['materia4']}: {str(persona['materia4'])}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.MAGENTA}Promedio de {persona['materia4']}: {float(persona['materia4_nota1']):.2f}".ljust(10))
+#    print(f"{Back.BLACK}{Fore.MAGENTA}Promedio de {persona['materia4']}: {float(persona['materia4_nota2']):.2f}".ljust(10))    
+
+#    print(texto_estilizado)
+
+
+    while True:
+        try:
+                # Solicitar la opción al usuario
+                #opcion_str = input(texto_estilizado).upper()
+                opcion_str = str(input("¿Su opción? ")).upper()
+                opcion_str = re.sub(r"\x1b\[\d+(?:;\d+)*m", "", opcion_str)  # Eliminar caracteres de formato ANSI        
+                if opcion_str == "":
+                    opcion_str = -1
+                else:
+                    opcion = (opcion_str)
+        
+################ MODIFICACIONES DATOS ALUMNOS
+                if opcion_str == 'APE':
+                    persona["apellido"] = input("Ingrese el nuevo apellido: ").upper()
+
+                elif opcion_str == 'NOM':
+                    persona["nombres"] = input("Ingrese nombres: ").upper()
+
+                elif opcion_str == 'DOM':
+                    persona["domicilio"] = str(input("Ingrese el nuevo domicilio: "))
+
+                elif opcion_str == 'DNI':
+                    
+                        if persona_encontrada is not None:
+                            nuevo_dni = input("Ingrese el nuevo DNI: ")
+                            persona_encontrada["dni"] = int(nuevo_dni)
+                            print("DNI modificado correctamente.")
+                            time.sleep(4)
+                        else:
+                            print("No se encontró una persona con ese DNI.")
+                            time.sleep(4)
+    
+ ################ FIN DATOS ALUMNOS
+
+################ MODIFICACIONES MATERIA 1
+                elif opcion_str == 'MA1':
+                    #print(f"{Back.BLACK}{Fore.GREEN}Nombre actual de la materia :   {str(persona['materia1']).upper()}".ljust(10))
+                    persona["materia1"] = input(f"{Back.BLACK}{Fore.GREEN}Cambiar nombre de la materia {Back.BLACK}{Fore.GREEN}{persona['materia1'].upper()}:   ".ljust(10)).capitalize()
+        
+                elif opcion_str == 'N11':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia1']}:   ".ljust(10)))
+                    persona["materia1_nota1"] = format(nota,".2f")
+                
+                elif opcion_str == 'N21':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la segunda nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia1']}:   ".ljust(10)))
+                    persona["materia1_nota2"] = format(nota,".2f")
+            
+################ MODIFICACIONES MATERIA 2
+                elif opcion_str == 'MA2':
+                    persona["materia2"] = input("Ingrese el nombre de la materia 2: ").upper()
+            
+                elif opcion_str == 'N12':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia2']}:   ".ljust(10)))
+                    persona["materia2_nota1"] = format(nota,".2f")
+             
+                elif opcion_str == 'N22':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la segunda nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia2']}:   ".ljust(10)))
+                    persona["materia2_nota2"] = format(nota,".2f")
+
+################ MODIFICACIONES MATERIA 3
+                elif opcion_str == 'MA3':
+                    persona["materia3"] = input("Ingrese el nombre de la materia 3: ").upper()
+            
+                elif opcion_str == 'N13':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia3']}:   ".ljust(10)))
+                    persona["materia3_nota1"] = format(nota,".2f")
+             
+                elif opcion_str == 'N23':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia3']}:   ".ljust(10)))
+                    persona["materia3_nota2"] = format(nota,".2f")
+
+################ MODIFICACIONES MATERIA 4
+                elif opcion_str == 'MA4':
+                    persona["materia4"] = input("Ingrese el nombre de la materia 4: ").upper()
+            
+                elif opcion_str == 'N14':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia4']}:   ".ljust(10)))
+                    persona["materia4_nota1"] = format(nota,".2f")
+
+                elif opcion_str == 'N24':
+                    nota = float(input(f"{Back.BLACK}{Fore.GREEN}Cambiar la primera nota de la materia {Back.BLACK}{Fore.GREEN}{persona['materia4']}:   ".ljust(10)))
+                    persona["materia4_nota2"] = format(nota,".2f")
+
+                elif opcion_str == 'V':
+                    print("Saliendo del Menú...")
+                    mostrar_persona(padron, dni)
+                    return
+                else:
+                    print("Opción inválida. Por favor, seleccione una opción válida.")
+                    time.sleep(3)
+
+        except ValueError:
+            print("Opción inválida. Por favor, seleccione una opción válida.")
+
+        if encontrado==True:
+#       guardar_padron_en_archivo(padron)
+            mostrar_persona_a_modificar(padron, dni)
+            input()
+    
+        else:
+            print("No se encontró una persona con ese DNI.")
+
+        
+
+
+#################### FIN MODIFICACION DE DATOS DE ALUMNO
 
 
 #FUNCION PARA BORRAR UNA PERSONA (OK)
-import os
+#import os
 
 def borrar_persona(padron):
-    clean()
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("Función borrar_persona()")
     dni = int(input("Ingrese el DNI de la persona a borrar: "))
     mostrar_persona(padron, dni)
@@ -339,24 +460,28 @@ def borrar_persona(padron):
         print("No se encontró una persona con ese DNI.")
     else:
         print("El borrado de la persona ha sido cancelado.")
-
-    input()
-
+    time.sleep(3)
 
 
-#FUNCION MOSTRAR DATOS DE UNA PERSONA (OK)
-def mostrar_persona(padron, dni):
+
+#FUNCION MOSTRAR DATOS DE PERSONA PARA MODIFICAR SUS DATOS (OK)
+def mostrar_persona_a_modificar_XXXXX(padron, dni):
     # Buscar la persona en el padrón
     colorama.init(autoreset=True)    
+    
+    
     for persona in padron:
         if persona["dni"] == dni:
-            print(f"{Fore.LIGHTGREEN_EX}Datos del Alumno:")
+            print(f"{Fore.LIGHTGREEN_EX}Datos a modificar del Alumno:")
             print("")
+            
             #DATOS DEL ALUMNO
             print(f"{Back.BLACK}{Fore.WHITE}Apellido: {persona['apellido']}".ljust(39),
-                f"{Back.BLACK}{Fore.WHITE}Nombres: {persona['nombres']}".ljust(35),
-                f"{Back.BLACK}{Fore.WHITE}D.N.I.: {persona['dni']}".ljust(40)
+                f"{Back.BLACK}{Fore.WHITE}Nombres: {persona['nombres']}".ljust(45),
+                f"{Back.BLACK}{Fore.WHITE}D.N.I.: {persona['dni']}".ljust(30),
+                f"{Back.BLACK}{Fore.WHITE}Domicilio: {persona['domicilio']}".ljust(30)
                 )
+            
             print("")
             #TITULOS SUBRAYADOS
             print(subrayar(
@@ -367,7 +492,6 @@ def mostrar_persona(padron, dni):
                 f"{Back.BLACK}{Fore.LIGHTBLUE_EX}SITUACION".ljust(10)
                 ))
             
-
             #INICIO LISTADO DE MATERIAS/NOTAS/PROMEDIO/SITUACION. MATERIA 1 (OK)
             persona['materia1_promedio'] = f"{((float(persona['materia1_nota1']) + float(persona['materia1_nota2'])) / 2):.2f}"
             print(f"{Back.BLACK}{Fore.GREEN}{persona['materia1']}".ljust(39), f"{Back.BLACK}{Fore.GREEN}{persona['materia1_nota1']}".ljust(22),
@@ -420,6 +544,189 @@ def mostrar_persona(padron, dni):
                   f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_promedio']}".ljust(18),
                   f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_situacion']}".ljust(12)
                   )
+            return
+    ###OK###
+    #hasta aqui todo ok
+    # Si no se encuentra la persona
+            print(f"{Back.WHITE}{Fore.RED}No se encontró una persona con ese DNI.")
+            print(Style.RESET_ALL)  # Resetear los estilos después de imprimir
+
+def mostrar_persona_a_modificar(padron, dni):
+    # Buscar la persona en el padrón
+    colorama.init(autoreset=True)
+    global encontrado
+    global persona
+    global persona_encontrada
+    
+  
+    persona_encontrada = None
+
+    # Buscar la persona en el padrón
+    encontrado = False
+    for persona in padron:
+        if persona["dni"] == dni:
+            encontrado = True
+            persona_encontrada = persona
+            break
+
+    return persona_encontrada
+
+
+    if persona_encontrada is not None:
+        print(f"{Fore.LIGHTGREEN_EX}Datos a modificar del Alumno:")
+        print("")
+
+        # DATOS DEL ALUMNO
+        print(f"{Back.BLACK}{Fore.WHITE}Apellido: {persona_encontrada['apellido']}".ljust(39),
+              f"{Back.BLACK}{Fore.WHITE}Nombres: {persona_encontrada['nombres']}".ljust(45),
+              f"{Back.BLACK}{Fore.WHITE}D.N.I.: {persona_encontrada['dni']}".ljust(30),
+              f"{Back.BLACK}{Fore.WHITE}Domicilio: {persona_encontrada['domicilio']}".ljust(30)
+              )
+
+        print("")
+        # TITULOS SUBRAYADOS
+        print(subrayar(
+            f"{Back.BLACK}{Fore.BLUE}MATERIA".ljust(39),
+            f"{Back.BLACK}{Fore.LIGHTBLUE_EX}PRIMERA NOTA".ljust(20),
+            f"{Back.BLACK}{Fore.LIGHTBLUE_EX}SEGUNDA NOTA".ljust(20),
+            f"{Back.BLACK}{Fore.LIGHTBLUE_EX}PROMEDIO".ljust(10),
+            f"{Back.BLACK}{Fore.LIGHTBLUE_EX}SITUACION".ljust(10)
+        ))
+
+        # Cálculo de promedios
+        materia1_promedio = ((float(persona_encontrada['materia1_nota1']) + float(persona_encontrada['materia1_nota2'])) / 2)
+        materia2_promedio = ((float(persona_encontrada['materia2_nota1']) + float(persona_encontrada['materia2_nota2'])) / 2)
+        materia3_promedio = ((float(persona_encontrada['materia3_nota1']) + float(persona_encontrada['materia3_nota2'])) / 2)
+        materia4_promedio = ((float(persona_encontrada['materia4_nota1']) + float(persona_encontrada['materia4_nota2'])) / 2)
+
+        # Imprimir datos de las materias
+        print(f"{Back.BLACK}{Fore.GREEN}{persona_encontrada['materia1']}".ljust(39),
+              f"{Back.BLACK}{Fore.GREEN}{persona_encontrada['materia1_nota1']}".ljust(22),
+              f"{Back.BLACK}{Fore.GREEN}{persona_encontrada['materia1_nota2']}".ljust(22),
+              f"{Back.BLACK}{Fore.GREEN}{materia1_promedio:.2f}".ljust(18),
+              f"{Back.BLACK}{Fore.GREEN}{persona_encontrada['materia1_situacion']}".ljust(12)
+              )
+
+        print(f"{Back.BLACK}{Fore.YELLOW}{persona_encontrada['materia2']}".ljust(39),
+              f"{Back.BLACK}{Fore.YELLOW}{persona_encontrada['materia2_nota1']}".ljust(22),
+              f"{Back.BLACK}{Fore.YELLOW}{persona_encontrada['materia2_nota2']}".ljust(22),
+              f"{Back.BLACK}{Fore.YELLOW}{materia2_promedio:.2f}".ljust(18),
+              f"{Back.BLACK}{Fore.YELLOW}{persona_encontrada['materia2_situacion']}".ljust(12)
+              )
+
+        print(f"{Back.BLACK}{Fore.CYAN}{persona_encontrada['materia3']}".ljust(39),
+              f"{Back.BLACK}{Fore.CYAN}{persona_encontrada['materia3_nota1']}".ljust(22),
+              f"{Back.BLACK}{Fore.CYAN}{persona_encontrada['materia3_nota2']}".ljust(22),
+              f"{Back.BLACK}{Fore.CYAN}{materia3_promedio:.2f}".ljust(18),
+              f"{Back.BLACK}{Fore.CYAN}{persona_encontrada['materia3_situacion']}".ljust(12)
+              )
+
+        print(f"{Back.BLACK}{Fore.MAGENTA}{persona_encontrada['materia4']}".ljust(39),
+              f"{Back.BLACK}{Fore.MAGENTA}{persona_encontrada['materia4_nota1']}".ljust(22),
+              f"{Back.BLACK}{Fore.MAGENTA}{persona_encontrada['materia4_nota2']}".ljust(22),
+              f"{Back.BLACK}{Fore.MAGENTA}{materia4_promedio:.2f}".ljust(18),
+              f"{Back.BLACK}{Fore.MAGENTA}{persona_encontrada['materia4_situacion']}".ljust(12)
+              )
+
+        # Actualizar el promedio en la persona encontrada
+        persona_encontrada['materia1_promedio'] = f"{materia1_promedio:.2f}"
+        persona_encontrada['materia2_promedio'] = f"{materia2_promedio:.2f}"
+        persona_encontrada['materia3_promedio'] = f"{materia3_promedio:.2f}"
+        persona_encontrada['materia4_promedio'] = f"{materia4_promedio:.2f}"
+
+        # Guardar los cambios en el archivo padron.csv
+        with open('padron.csv', 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=padron[0].keys(), delimiter=';')
+            writer.writeheader()
+            writer.writerows(padron)
+
+        print("Datos actualizados correctamente.")
+    else:
+        print("No se encontró una persona con ese DNI.")
+
+
+
+#FUNCION MOSTRAR DATOS DE UNA PERSONA (OK)
+def mostrar_persona(padron, dni):
+    # Buscar la persona en el padrón
+    colorama.init(autoreset=True)    
+    for persona in padron:
+        if persona["dni"] == dni:
+            print(f"{Fore.LIGHTGREEN_EX}Datos del Alumno:")
+            print("")
+            #DATOS DEL ALUMNO
+            print(f"{Back.BLACK}{Fore.WHITE}Apellido: {persona['apellido']}".ljust(39),
+                f"{Back.BLACK}{Fore.WHITE}Nombres: {persona['nombres']}".ljust(35),
+                f"{Back.BLACK}{Fore.WHITE}D.N.I.: {persona['dni']}".ljust(40),
+                f"{Back.BLACK}{Fore.WHITE}Domicilio: {persona['domicilio']}".ljust(30)
+                )
+            print("")
+            #TITULOS SUBRAYADOS
+            print(subrayar(
+                f"{Back.BLACK}{Fore.BLUE}MATERIA".ljust(39),
+                f"{Back.BLACK}{Fore.LIGHTBLUE_EX}PRIMERA NOTA".ljust(20),
+                f"{Back.BLACK}{Fore.LIGHTBLUE_EX}SEGUNDA NOTA".ljust(20),
+                f"{Back.BLACK}{Fore.LIGHTBLUE_EX}PROMEDIO".ljust(10),
+                f"{Back.BLACK}{Fore.LIGHTBLUE_EX}SITUACION".ljust(10)
+                ))
+            
+
+            #INICIO LISTADO DE MATERIAS/NOTAS/PROMEDIO/SITUACION. MATERIA 1 (OK)
+            persona['materia1_promedio'] = f"{((float(persona['materia1_nota1']) + float(persona['materia1_nota2'])) / 2):.2f}"
+            persona['materia1_situacion'] = "Regularizada" if float(persona['materia1_promedio']) >= 6.00 else "No Regularizada"
+            print(f"{Back.BLACK}{Fore.GREEN}{persona['materia1']}".ljust(39), f"{Back.BLACK}{Fore.GREEN}{persona['materia1_nota1']}".ljust(22),
+                  f"{Back.BLACK}{Fore.GREEN}{persona['materia1_nota2']}".ljust(22), 
+                  f"{Back.BLACK}{Fore.GREEN}{persona['materia1_promedio']}".ljust(18),
+                  f"{Back.BLACK}{Fore.GREEN}{persona['materia1_situacion']}".ljust(12)
+                  )
+            # Materia 1: Guardar el promedio en el archivo padron.csv
+            with open('padron.csv', 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=padron[0].keys(), delimiter=';')
+                writer.writeheader()
+                writer.writerows(padron)
+            csvfile.close()  # Cerrar el archivo
+
+            #INICIO LISTADO DE MATERIAS/NOTAS/PROMEDIO/SITUACION. MATERIA 2 (OK)
+            persona['materia2_promedio'] = f"{((float(persona['materia2_nota1']) + float(persona['materia2_nota2'])) / 2):.2f}"
+            persona['materia2_situacion'] = "Regularizada" if float(persona['materia2_promedio']) >= 6.00 else "No Regularizada"
+            print(f"{Back.BLACK}{Fore.YELLOW}{persona['materia2']}".ljust(39),
+                  f"{Back.BLACK}{Fore.YELLOW}{persona['materia2_nota1']}".ljust(22),
+                  f"{Back.BLACK}{Fore.YELLOW}{persona['materia2_nota2']}".ljust(22),
+                  f"{Back.BLACK}{Fore.YELLOW}{persona['materia2_promedio']}".ljust(18),
+                  f"{Back.BLACK}{Fore.YELLOW}{persona['materia2_situacion']}".ljust(12)
+                  )
+            # Materia 2: Guardar el promedio en el archivo padron.csv
+            with open('padron.csv', 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=padron[0].keys(), delimiter=';')
+                writer.writeheader()
+                writer.writerows(padron)
+            csvfile.close()  # Cerrar el archivo
+
+            #INICIO LISTADO DE MATERIAS/NOTAS/PROMEDIO/SITUACION. MATERIA 3 (OK)
+            persona['materia3_promedio'] = f"{((float(persona['materia3_nota1']) + float(persona['materia3_nota2'])) / 2):.2f}"
+            persona['materia3_situacion'] = "Regularizada" if float(persona['materia3_promedio']) >= 6.00 else "No Regularizada"
+            print(f"{Back.BLACK}{Fore.CYAN}{persona['materia3']}".ljust(39),
+                  f"{Back.BLACK}{Fore.CYAN}{persona['materia3_nota1']}".ljust(22),
+                  f"{Back.BLACK}{Fore.CYAN}{persona['materia3_nota2']}".ljust(22),
+                  f"{Back.BLACK}{Fore.CYAN}{persona['materia3_promedio']}".ljust(18),
+                  f"{Back.BLACK}{Fore.CYAN}{persona['materia3_situacion']}".ljust(12)
+                  )
+            # Materia 3: Guardar el promedio en el archivo padron.csv
+            with open('padron.csv', 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=padron[0].keys(), delimiter=';')
+                writer.writeheader()
+                writer.writerows(padron)
+            csvfile.close()  # Cerrar el archivo
+
+            #INICIO LISTADO DE MATERIAS/NOTAS/PROMEDIO/SITUACION. MATERIA 4 (OK)
+            persona['materia4_promedio'] = f"{((float(persona['materia4_nota1']) + float(persona['materia4_nota2'])) / 2):.2f}"
+            persona['materia4_situacion'] = "Regularizada" if float(persona['materia4_promedio']) >= 6.00 else "No Regularizada"
+            print(f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4']}".ljust(39),
+                  f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_nota1']}".ljust(22),
+                  f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_nota2']}".ljust(22),
+                  f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_promedio']}".ljust(18),
+                  f"{Back.BLACK}{Fore.MAGENTA}{persona['materia4_situacion']}".ljust(12)
+                  )
             # Materia 4: Guardar el promedio en el archivo padron.csv
             with open('padron.csv', 'w', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=padron[0].keys(), delimiter=';')
@@ -440,7 +747,7 @@ def mostrar_persona(padron, dni):
 def archivo_carga_personas(padron, nombre_archivo):
     global archivo
     archivo=None
-    clean()
+    os.system('cls' if os.name == 'nt' else 'clear')
     archivo = input("Ingrese SOLO EL NOMBRE del archivo CSV: " + ".csv" + " (solo 'ENTER' carga el archivo 'padron'). ")
     
     try:
@@ -514,7 +821,7 @@ def archivo_carga_personas(padron, nombre_archivo):
 
 def mostrar_padron(padron):
     #print("\033[5m")  # Código para fuente de tamaño menor
-    clean()
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("Lista completa de personas:")
     for i, persona in enumerate(padron, start=1):
         print(f"Registro {i}: ", end="")
@@ -533,26 +840,22 @@ import csv
 #INVOCA A LA FUNCION DE CARGA INICIAL QUE SE ENCUENTRA DEFINIDA AL PRINCIPIO DE ESTE PROGRAMA.
 archivo_carga_inicial_personas(padron)
 
-# Menú de opciones
+
+
+############ Menú de opciones
 
 import os
 os.system('cls' if os.name == 'nt' else 'clear') #Para limpiar la pantalla
       
-   
-    # Función para subrayar el texto
-#def subrayar(texto):
-#    return "\033[4m" + texto + "\033[0m"
-
+# Función para subrayar el texto
 def subrayar(*textos):
     return " ".join("\033[4m" + texto + "\033[0m" for texto in textos)
-
-
 
 # Definir las opciones del menú con diferentes estilos
 titulo = subrayar(f"{Fore.GREEN}{Style.BRIGHT}Ingrese la operación que desea realizar:")
 
-opcion1 = "1. " + f"{Fore.WHITE}{Style.BRIGHT}Dar de Alta a una persona"
-opcion2 = f"{Fore.RESET}{Style.RESET_ALL}2. " + f"{Fore.RED}{Style.BRIGHT}Modificar datos de la persona"
+opcion1 = f"{Fore.RESET}{Style.RESET_ALL}1. " + f"{Fore.WHITE}{Style.BRIGHT}Dar de Alta a una persona"
+opcion2 = f"{Fore.RESET}{Style.RESET_ALL}2. " + f"{Fore.WHITE}{Style.BRIGHT}Modificar datos de la persona"
 opcion3 = f"{Fore.RESET}{Style.RESET_ALL}3. " + f"{Fore.WHITE}{Style.BRIGHT}Eliminar a una persona"
 opcion4 = f"{Fore.RESET}{Style.RESET_ALL}4. " + f"{Fore.WHITE}{Style.BRIGHT}Mostrar datos de una persona"
 opcion5 = f"{Fore.RESET}{Style.RESET_ALL}5. " + f"{Fore.CYAN}Recargar/Importar listado de personas desde un archivo CSV"
@@ -561,16 +864,15 @@ opcion7 = f"{Fore.RED}{Style.BRIGHT}0. " + f"{Fore.WHITE}{Style.BRIGHT}Salir del
 opcion8 = f"¿Su opción? " + f"{Fore.RESET}{Style.RESET_ALL}-->>> "
 
 # Concatenar las líneas del menú
-texto_estilizado = f"{titulo}\n\n{opcion1}\n{opcion2}\n{opcion3}\n{opcion4}\n{opcion5}\n{opcion6}\n{opcion7}\n{opcion8}"
+texto_estilizado_0 = f"{titulo}\n\n{opcion1}\n{opcion2}\n{opcion3}\n{opcion4}\n{opcion5}\n{opcion6}\n{opcion7}\n{opcion8}"
 
 # Solicitar la opción al usuario
-#opcion_str = input(texto_estilizado)
+#opcion_str = input(texto_estilizado_0)
 
 while True:
-    clean()
     try:
             # Solicitar la opción al usuario
-            opcion_str = input(texto_estilizado)
+            opcion_str = input(texto_estilizado_0)
         
             if opcion_str == "":
                 opcion = -1
@@ -618,9 +920,9 @@ archivo="padron.csv"
 guardar_padron_en_archivo(padron)
 #break
 
-
-#Para limpiar la pantalla
-clean()
+    #Para limpiar la pantalla
+import os
+os.system('cls' if os.name == 'nt' else 'clear')
 
 #FIN DE PROGRAMA
 
