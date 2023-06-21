@@ -1,0 +1,7 @@
+DNI	Nombre	Apellido	Domicilio	Materia1	Materia1-Nota1	Materia1-Nota2	Materia1-Promedio	Materia1-Situacion	Materia2	Materia2-Nota1	Materia2-Nota2	Materia2-Promedio	Materia2-Situacion
+112472451	Daniel	Gomez	Bernal 50	Fisica	9.00	6.00	7.50	Regularizada	MATEMÁTICAS	6.00	9.00	7.50	Regularizada
+34201567	Javier	Gonzalez	Hornos 1234		0.00	0.00	0.00	No Regularizada		0.00	0.00	0.00	No Regularizada
+45654876	Fernando	Nuñez	Bacacay 2831		0.00	0.00	0.00	No Regularizada		0.00	0.00	0.00	No Regularizada
+23654876	Daniel osvaldo	Rezinzcky	Condarco 1676	Lengua	2.00	9.00	5.50	No Regularizada	Matemáticas	8.00	9.00	8.50	Regularizada
+34567298	Jorge	Daniele	Nazca 3090 caba	Geografía	6.00	8.00	7.00	Regularizada	MATEMÁTICAS	7.00	2.00	4.50	No Regularizada
+14298345	Daniel	Heraclito	Sarmiento 9876 san justo		0.00	0.00	0.00	No Regularizada		0.00	0.00	0.00	No Regularizada
